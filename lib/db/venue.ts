@@ -8,8 +8,7 @@ export async function getVenues() {
       const result = await pool.request().query(`
             SELECT *
             FROM Venues
-            WHERE is_active = 1
-            ORDER BY created_at DESC
+            ORDER BY venue_id DESC
          `);
 
       return result.recordset;
@@ -18,5 +17,25 @@ export async function getVenues() {
     console.error("Get Venues Error:", error);
 
     throw new Error("Failed to fetch venues");
+  }
+}
+
+export async function getVenueById(id: string) {
+  try {
+    const pool = await connectDB();
+
+    if (pool) {
+      const result = await pool.request().input("id", id).query(`
+               SELECT *
+               FROM Venues
+               WHERE venue_id = @id
+            `);
+
+      return result.recordset[0];
+    }
+  } catch (error) {
+    console.error("Get Venue Error:", error);
+
+    throw new Error("Failed to fetch venue");
   }
 }

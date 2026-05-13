@@ -2,25 +2,100 @@ import { loginAction } from "@/actions/auth";
 
 export default function LoginPage() {
   return (
-    <div className="h-screen flex items-center justify-center">
-      <form action={loginAction} className="flex flex-col gap-4 w-80">
-        <h1 className="text-3xl font-bold">Login</h1>
+    <div
+      className="
+            min-h-screen
+            flex
+            items-center
+            justify-center
+            bg-[var(--background)]
+            px-4
+         "
+    >
+      <form
+        action={loginAction}
+        className="
+               w-full
+               max-w-md
+               bg-[var(--card)]
+               border
+               border-[var(--border)]
+               rounded-2xl
+               p-8
+               shadow-2xl
+               space-y-5
+            "
+      >
+        <h1
+          className="
+                  text-4xl
+                  font-bold
+                  text-[var(--foreground)]
+                  mb-2
+               "
+        >
+          Login
+        </h1>
 
+        {/* Email */}
         <input
           type="email"
           name="email"
           placeholder="Email"
-          className="border p-3 rounded"
+          className="
+                  w-full
+                  bg-transparent
+                  border
+                  border-[var(--border)]
+                  rounded-xl
+                  p-4
+                  text-[var(--foreground)]
+                  placeholder:text-[var(--muted)]
+                  outline-none
+                  focus:border-[var(--accent)]
+                  transition-colors
+               "
+          required
         />
 
+        {/* Password */}
         <input
           type="password"
           name="password"
           placeholder="Password"
-          className="border p-3 rounded"
+          className="
+                  w-full
+                  bg-transparent
+                  border
+                  border-[var(--border)]
+                  rounded-xl
+                  p-4
+                  text-[var(--foreground)]
+                  placeholder:text-[var(--muted)]
+                  outline-none
+                  focus:border-[var(--accent)]
+                  transition-colors
+               "
+          required
         />
 
-        <button className="bg-black text-white p-3 rounded">Login</button>
+        {/* Submit */}
+        <button
+          type="submit"
+          className="
+                  w-full
+                  bg-[var(--accent)]
+                  hover:bg-[var(--accent-hover)]
+                  text-white
+                  py-4
+                  rounded-xl
+                  font-semibold
+                  transition-colors
+                  cursor-pointer
+               "
+        >
+          Login
+        </button>
       </form>
     </div>
   );

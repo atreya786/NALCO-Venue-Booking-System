@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "NALCO Venue Booking System",
+
   description: "NALCO Venue Appointment Management System",
 };
 
@@ -13,7 +15,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body
+        className="
+               bg-[var(--background)]
+               text-[var(--foreground)]
+               antialiased
+            "
+      >
+        {children}
+        <Toaster position="top-right" />
+      </body>
     </html>
   );
 }

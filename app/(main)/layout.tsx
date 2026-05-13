@@ -16,10 +16,27 @@ export default async function MainLayout({
   }
 
   return (
-    <div className="flex">
+    <div
+      className="
+            min-h-screen
+            flex
+            bg-[var(--background)]
+            text-[var(--foreground)]
+         "
+    >
+      {/* Sidebar */}
       <Sidebar />
 
-      <main className="flex-1 p-6">{children}</main>
+      {/* Main Content */}
+      <main
+        className="
+               flex-1
+               p-6
+               overflow-y-auto
+            "
+      >
+        {children}
+      </main>
     </div>
   );
 }

@@ -69,3 +69,97 @@ export async function createVenue(formData: FormData) {
   // Redirect after success
   redirect("/venues");
 }
+
+export async function updateVenue(id: string, formData: FormData) {
+  const session = await auth();
+
+  // RBAC
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  const venue_name = formData.get("venue_name") as string;
+
+  const location = formData.get("location") as string;
+
+  try {
+    const pool = await connectDB();
+
+    if (pool) {
+      await pool
+        .request()
+        .input("id", sql.Int, Number(id))
+        .input("venue_name", sql.VarChar, venue_name)
+        .input("location", sql.VarChar, location).query(`
+      UPDATE Venues
+      SET
+         venue_name = @venue_name,
+         location = @location
+      WHERE venue_id = @id
+   `);
+    }
+  } catch (error) {
+    console.error("Update Venue Error:", error);
+
+    // throw new Error("Failed to update venue");
+  }
+
+  revalidatePath("/venues");
+
+  redirect("/venues");
+}
+
+export async function deactivateVenue(id: string) {
+  // Get session
+  const session = await auth();
+
+  // RBAC Protection
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const pool = await connectDB();
+
+    if (pool) {
+      await pool.request().input("id", sql.Int, Number(id)).query(`
+               UPDATE Venues
+               SET is_active = 0
+               WHERE venue_id = @id
+            `);
+    }
+  } catch (error) {
+    console.error("Deactivate Venue Error:", error);
+
+    throw new Error("Failed to deactivate venue");
+  }
+
+  // Refresh venues page
+  revalidatePath("/venues");
+}
+
+export async function activateVenue(id: string) {
+  const session = await auth();
+
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  try {
+    const pool = await connectDB();
+
+    if (pool) {
+      await pool.request().input("id", sql.Int, Number(id)).query(`
+               UPDATE Venues
+               SET is_active = 1
+               WHERE venue_id = @id
+            `);
+    }
+  } catch (error) {
+    console.error("Activate Venue Error:", error);
+
+    throw new Error("Failed to activate venue");
+  }
+
+  revalidatePath("/venues");
+}
