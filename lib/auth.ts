@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 
 import Credentials from "next-auth/providers/credentials";
 
+import sql from "mssql";
+
 import connectDB from "./db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -9,38 +11,65 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       credentials: {
         email: {},
+
         password: {},
       },
 
       async authorize(credentials) {
-        if (!credentials) {
-          return null;
-        }
+        try {
+          // console.log("Credentials:", credentials);
 
-        const pool = await connectDB();
+          if (!credentials?.email || !credentials?.password) {
+            return null;
+          }
 
-        const result = await pool?.request().input("email", credentials.email)
-          .query(`
-            SELECT * FROM Users
+          const pool = await connectDB();
+
+          if (!pool) {
+            console.log("Pool not found");
+            return null;
+          }
+
+          const result = await pool
+            .request()
+            .input("email", sql.VarChar, credentials.email as string).query(`
+            SELECT *
+            FROM Users
             WHERE email = @email
-          `);
+         `);
 
-        const user = result?.recordset[0];
+          // console.log("Result:", result?.recordset);
 
-        if (!user) {
+          const user = result.recordset[0];
+
+          // console.log("User:", user);
+
+          if (!user) {
+            console.log("User not found");
+            return null;
+          }
+
+          // console.log("DB Password:", user.password_hash);
+          // console.log("Entered Password:", credentials.password);
+
+          if (user.password_hash !== credentials.password) {
+            console.log("Password mismatch");
+            return null;
+          }
+
+          console.log("LOGIN SUCCESS");
+
+          return {
+            id: user.user_id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Authorize Error:", error);
+
           return null;
         }
-
-        if (user.password_hash !== credentials.password) {
-          return null;
-        }
-
-        return {
-          id: user.user_id.toString(),
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        };
       },
     }),
   ],
@@ -52,6 +81,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        token.id = user.id;
+
         token.role = user.role;
       }
 
@@ -59,14 +90,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async session({ session, token }) {
-      session.user.role = token.role as string;
+      if (session.user) {
+        session.user.id = token.id as string;
 
-      console.log(session);
+        session.user.role = token.role as string;
+      }
 
       return session;
     },
   },
-  
 
   secret: process.env.AUTH_SECRET,
 });
