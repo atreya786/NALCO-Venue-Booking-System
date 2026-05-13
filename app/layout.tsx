@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NALCO Appointment System",
+  title: "NALCO Venue Booking System",
   description: "NALCO Venue Appointment Management System",
 };
 
