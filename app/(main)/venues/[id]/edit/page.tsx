@@ -21,7 +21,7 @@ export default async function EditVenuePage({ params }: Props) {
     redirect("/venues");
   }
 
-  const venue = await getVenueById(id);
+  const venue = await getVenueById(Number(id));
 
   return (
     <div

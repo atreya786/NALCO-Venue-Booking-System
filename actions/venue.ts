@@ -109,7 +109,7 @@ export async function updateVenue(id: string, formData: FormData) {
   redirect("/venues");
 }
 
-export async function deactivateVenue(id: string) {
+export async function deactivateVenue(formData: FormData) {
   // Get session
   const session = await auth();
 
@@ -117,6 +117,8 @@ export async function deactivateVenue(id: string) {
   if (!session || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }
+
+  const id = Number(formData.get("venue_id"));
 
   try {
     const pool = await connectDB();
@@ -138,12 +140,14 @@ export async function deactivateVenue(id: string) {
   revalidatePath("/venues");
 }
 
-export async function activateVenue(id: string) {
+export async function activateVenue(formData: FormData) {
   const session = await auth();
 
   if (!session || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }
+
+  const id = Number(formData.get("venue_id"));
 
   try {
     const pool = await connectDB();

@@ -116,14 +116,13 @@ export default async function VenuesPage() {
                            transition-colors
                         "
               >
-                <td
-                  className="
-                              p-5
-                              text-[var(--foreground)]
-                              font-medium
-                           "
-                >
-                  {venue.venue_name}
+                <td className="p-5">
+                  <Link
+                    href={`/venues/${venue.venue_id}`}
+                    className="font-medium text-[var(--accent)] hover:underline"
+                  >
+                    {venue.venue_name}
+                  </Link>
                 </td>
 
                 <td

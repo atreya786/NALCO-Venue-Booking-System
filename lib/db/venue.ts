@@ -1,3 +1,5 @@
+import sql from "mssql";
+
 import connectDB from "@/lib/db";
 
 export async function getVenues() {
@@ -6,10 +8,10 @@ export async function getVenues() {
 
     if (pool) {
       const result = await pool.request().query(`
-            SELECT *
-            FROM Venues
-            ORDER BY venue_id DESC
-         `);
+        SELECT *
+        FROM Venues
+        ORDER BY venue_id DESC
+      `);
 
       return result.recordset;
     }
@@ -20,16 +22,16 @@ export async function getVenues() {
   }
 }
 
-export async function getVenueById(id: string) {
+export async function getVenueById(id: number) {
   try {
     const pool = await connectDB();
 
     if (pool) {
-      const result = await pool.request().input("id", id).query(`
-               SELECT *
-               FROM Venues
-               WHERE venue_id = @id
-            `);
+      const result = await pool.request().input("id", sql.Int, id).query(`
+          SELECT *
+          FROM Venues
+          WHERE venue_id = @id
+        `);
 
       return result.recordset[0];
     }
