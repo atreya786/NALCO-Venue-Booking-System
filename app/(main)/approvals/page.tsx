@@ -2,8 +2,7 @@ import { auth } from "@/lib/auth";
 
 import { redirect } from "next/navigation";
 
-import { getBookings } from "@/lib/db/bookings";
-
+import { getBookings, getBookingsByUserId } from "@/lib/db/bookings";
 import { approveBooking, rejectBooking } from "@/actions/approval";
 
 export default async function ApprovalsPage() {
@@ -13,7 +12,13 @@ export default async function ApprovalsPage() {
     redirect("/login");
   }
 
-  const bookings = await getBookings();
+  let bookings;
+
+  if (session.user.role === "ADMIN") {
+    bookings = await getBookings();
+  } else {
+    bookings = await getBookingsByUserId(Number(session.user.id));
+  }
 
   return (
     <div>
@@ -56,7 +61,7 @@ export default async function ApprovalsPage() {
           </thead>
 
           <tbody>
-            {bookings?.map((booking: any) => {
+            {bookings?.map((booking: any, index: number) => {
               const role = session.user.role;
 
               const canFacultyApprove =
@@ -82,7 +87,7 @@ export default async function ApprovalsPage() {
                   className="border-t border-[var(--border)] hover:bg-white/5 transition"
                 >
                   <td className="px-6 py-6 text-cyan-500 text-xl">
-                    {booking.appointment_id}
+                    {index+1}
                   </td>
 
                   <td className="px-6 py-6 text-cyan-500 text-xl">
@@ -112,9 +117,7 @@ export default async function ApprovalsPage() {
                           action={async () => {
                             "use server";
 
-                            await approveBooking(
-                              booking.appointment_id,
-                            );
+                            await approveBooking(booking.appointment_id);
                           }}
                         >
                           <button className="bg-green-600 hover:bg-green-700 transition px-4 py-2 rounded-xl font-medium">

@@ -41,9 +41,9 @@ export async function createBookingAction(formData: FormData) {
     end_time: endDateTime,
   });
 
-  revalidatePath("/bookings");
+  revalidatePath("/approvals");
 
-  redirect("/bookings");
+  redirect("/approvals");
 }
 
 export async function updateBookingAction(formData: FormData) {

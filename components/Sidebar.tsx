@@ -9,7 +9,7 @@ export default async function Sidebar() {
   return (
     <aside
       className="
-            w-72
+            w-50
             min-h-screen
             bg(--sidebar)
             text-white

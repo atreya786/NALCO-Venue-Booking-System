@@ -129,3 +129,28 @@ export async function updateBooking(data: {
         WHERE appointment_id = @appointment_id
       `);
 }
+
+export async function getBookingsByUserId(user_id: number) {
+  const pool = await connectDB();
+
+  const result = await pool?.request().input("user_id", sql.Int, user_id)
+    .query(`
+      SELECT
+        b.*,
+        u.name AS requested_by_name,
+        v.venue_name
+      FROM Bookings b
+
+      JOIN Users u
+        ON b.requested_by = u.user_id
+
+      JOIN Venues v
+        ON b.venue_id = v.venue_id
+
+      WHERE b.requested_by = @user_id
+
+      ORDER BY b.created_at DESC
+    `);
+
+  return result?.recordset;
+}
