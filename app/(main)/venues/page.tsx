@@ -20,25 +20,20 @@ export default async function VenuesPage() {
          "
     >
       {/* Header */}
-      <div
-        className="
-               flex
-               items-center
-               justify-between
-               mb-8
-            "
-      >
-        <div>
-          <h1
-            className="
-                     text-5xl
-                     font-bold
-                     text-[var(--foreground)]
-                  "
-          >
-            Venues
-          </h1>
-        </div>
+      <div className="flex items-center justify-between">
+        <h1 className="text-5xl font-bold mb-5">Venues</h1>
+        <Link
+          href="/bookings/create"
+          className="bg-[var(--accent)]
+                     hover:bg-[var(--accent-hover)]
+                     text-white
+                     p-3
+                     text-lg
+                     rounded-xl
+                     transition-colors"
+        >
+          Create Booking
+        </Link>
 
         {session?.user.role === "ADMIN" && (
           <Link
@@ -47,14 +42,13 @@ export default async function VenuesPage() {
                      bg-[var(--accent)]
                      hover:bg-[var(--accent-hover)]
                      text-white
-                     px-5
-                     py-3
+                     p-3
+                     text-lg
                      rounded-xl
-                     font-medium
                      transition-colors
                   "
           >
-            + Create Venue
+            + Add New Venue
           </Link>
         )}
       </div>

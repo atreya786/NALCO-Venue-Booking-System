@@ -1,21 +1,22 @@
 import Link from "next/link";
 
-import { getAppointments } from "@/lib/db/appointment";
+import { getBookings } from "@/lib/db/bookings";
 
-export default async function AppointmentsPage() {
-  const appointments = await getAppointments();
+import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
+
+export default async function BookingsPage() {
+  const bookings = await getBookings();
+  const session = await auth();
+
+  if (!session || session?.user.role === "STUDENT") {
+    redirect("/");
+  }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-5xl font-bold">Appointments</h1>
-
-        <Link
-          href="/appointments/create"
-          className="rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)]"
-        >
-          Create Appointment
-        </Link>
+        <h1 className="text-5xl font-bold">Bookings</h1>
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-[var(--border)]">
@@ -41,42 +42,42 @@ export default async function AppointmentsPage() {
           </thead>
 
           <tbody>
-            {appointments?.map((appointment: any) => (
+            {bookings?.map((booking: any) => (
               <tr
-                key={appointment.appointment_id}
+                key={booking.appointment_id}
                 className="border-t border-[var(--border)] hover:bg-white/5 transition"
               >
                 <td className="px-6 py-6">
                   <Link
-                    href={`/appointments/${appointment.appointment_id}`}
+                    href={`/bookings/${booking.appointment_id}`}
                     className="text-cyan-500 text-xl hover:underline"
                   >
-                    {appointment.purpose}
+                    {booking.purpose}
                   </Link>
                 </td>
 
                 <td className="px-6 py-6 text-xl text-gray-300">
-                  {appointment.venue_name}
+                  {booking.venue_name}
                 </td>
 
                 <td className="px-6 py-6 text-xl">
-                  {appointment.requested_by_name}
+                  {booking.requested_by_name}
                 </td>
 
                 <td className="px-6 py-6">
-                  {appointment.status === "APPROVED" && (
+                  {booking.status === "APPROVED" && (
                     <span className="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-medium">
                       APPROVED
                     </span>
                   )}
 
-                  {appointment.status === "PENDING" && (
+                  {booking.status === "PENDING" && (
                     <span className="bg-yellow-500/20 text-yellow-400 px-4 py-1 rounded-full text-sm font-medium">
                       PENDING
                     </span>
                   )}
 
-                  {appointment.status === "REJECTED" && (
+                  {booking.status === "REJECTED" && (
                     <span className="bg-red-500/20 text-red-400 px-4 py-1 rounded-full text-sm font-medium">
                       REJECTED
                     </span>

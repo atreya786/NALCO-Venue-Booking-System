@@ -1,45 +1,20 @@
-import { notFound } from "next/navigation";
+import { createBookingAction } from "@/actions/bookings";
 
-import { getAppointmentById } from "@/lib/db/appointment";
-
-import { updateAppointmentAction } from "@/actions/appointment";
-
-type Props = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-export default async function EditAppointmentPage({ params }: Props) {
-  const { id } = await params;
-
-  const appointment = await getAppointmentById(Number(id));
-
-  if (!appointment) {
-    notFound();
-  }
-
+export default function CreateBookingPage() {
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold">Edit Appointment</h1>
+      <h1 className="mb-6 text-2xl font-bold">Create Booking</h1>
 
       <form
-        action={updateAppointmentAction}
+        action={createBookingAction}
         className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6"
       >
-        <input
-          type="hidden"
-          name="appointment_id"
-          value={appointment.appointment_id}
-        />
-
         <div>
           <label className="mb-2 block text-sm font-medium">Venue ID</label>
 
           <input
             type="number"
             name="venue_id"
-            defaultValue={appointment.venue_id}
             required
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
@@ -51,7 +26,6 @@ export default async function EditAppointmentPage({ params }: Props) {
           <input
             type="text"
             name="purpose"
-            defaultValue={appointment.purpose}
             required
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
@@ -63,7 +37,6 @@ export default async function EditAppointmentPage({ params }: Props) {
           <textarea
             name="description"
             rows={4}
-            defaultValue={appointment.description}
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
         </div>
@@ -75,9 +48,6 @@ export default async function EditAppointmentPage({ params }: Props) {
             <input
               type="date"
               name="start_date"
-              defaultValue={
-                new Date(appointment.start_time).toISOString().split("T")[0]
-              }
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -89,9 +59,6 @@ export default async function EditAppointmentPage({ params }: Props) {
             <input
               type="time"
               name="start_time"
-              defaultValue={new Date(appointment.start_time)
-                .toTimeString()
-                .slice(0, 5)}
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -105,9 +72,6 @@ export default async function EditAppointmentPage({ params }: Props) {
             <input
               type="date"
               name="end_date"
-              defaultValue={
-                new Date(appointment.end_time).toISOString().split("T")[0]
-              }
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -119,9 +83,6 @@ export default async function EditAppointmentPage({ params }: Props) {
             <input
               type="time"
               name="end_time"
-              defaultValue={new Date(appointment.end_time)
-                .toTimeString()
-                .slice(0, 5)}
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -132,7 +93,7 @@ export default async function EditAppointmentPage({ params }: Props) {
           type="submit"
           className="rounded-lg bg-[var(--accent)] px-5 py-3 font-medium text-white hover:bg-[var(--accent-hover)]"
         >
-          Update Appointment
+          Create Booking
         </button>
       </form>
     </div>

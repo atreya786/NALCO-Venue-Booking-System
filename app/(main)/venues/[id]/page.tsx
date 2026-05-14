@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { getVenueById } from "@/lib/db/venue";
+import Link from "next/link";
 
 type Props = {
   params: Promise<{
@@ -19,10 +20,8 @@ export default async function VenueDetailsPage({ params }: Props) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">{venue.venue_name}</h1>
-
-        <p className="mt-2 text-gray-400">Venue Details</p>
+      <div className="flex items-center justify-between">
+        <h1 className="text-5xl font-bold">Venues</h1>
       </div>
 
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6">

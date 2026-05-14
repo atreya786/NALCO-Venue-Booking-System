@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth";
 
 import { redirect } from "next/navigation";
 
-import { getAppointments } from "@/lib/db/appointment";
+import { getBookings } from "@/lib/db/bookings";
 
-import { approveAppointment, rejectAppointment } from "@/actions/approval";
+import { approveBooking, rejectBooking } from "@/actions/approval";
 
 export default async function ApprovalsPage() {
   const session = await auth();
@@ -13,7 +13,7 @@ export default async function ApprovalsPage() {
     redirect("/login");
   }
 
-  const appointments = await getAppointments();
+  const bookings = await getBookings();
 
   return (
     <div>
@@ -56,53 +56,53 @@ export default async function ApprovalsPage() {
           </thead>
 
           <tbody>
-            {appointments?.map((appointment: any) => {
+            {bookings?.map((booking: any) => {
               const role = session.user.role;
 
               const canFacultyApprove =
-                role === "FACULTY" && appointment.faculty_status === "PENDING";
+                role === "FACULTY" && booking.faculty_status === "PENDING";
 
               const canHodApprove =
                 role === "HOD" &&
-                appointment.faculty_status === "APPROVED" &&
-                appointment.hod_status === "PENDING";
+                booking.faculty_status === "APPROVED" &&
+                booking.hod_status === "PENDING";
 
               const canAdminApprove =
                 role === "ADMIN" &&
-                appointment.faculty_status === "APPROVED" &&
-                appointment.hod_status === "APPROVED" &&
-                appointment.admin_status === "PENDING";
+                booking.faculty_status === "APPROVED" &&
+                booking.hod_status === "APPROVED" &&
+                booking.admin_status === "PENDING";
 
               const canApprove =
                 canFacultyApprove || canHodApprove || canAdminApprove;
 
               return (
                 <tr
-                  key={appointment.appointment_id}
+                  key={booking.appointment_id}
                   className="border-t border-[var(--border)] hover:bg-white/5 transition"
                 >
                   <td className="px-6 py-6 text-cyan-500 text-xl">
-                    {appointment.appointment_id}
+                    {booking.appointment_id}
                   </td>
 
                   <td className="px-6 py-6 text-cyan-500 text-xl">
-                    {appointment.purpose}
+                    {booking.purpose}
                   </td>
 
                   <td className="px-6 py-6 text-xl">
-                    {appointment.requested_by_name}
+                    {booking.requested_by_name}
                   </td>
 
                   <td className="px-6 py-6">
-                    <StatusBadge status={appointment.faculty_status} />
+                    <StatusBadge status={booking.faculty_status} />
                   </td>
 
                   <td className="px-6 py-6">
-                    <StatusBadge status={appointment.hod_status} />
+                    <StatusBadge status={booking.hod_status} />
                   </td>
 
                   <td className="px-6 py-6">
-                    <StatusBadge status={appointment.admin_status} />
+                    <StatusBadge status={booking.admin_status} />
                   </td>
 
                   <td className="px-6 py-6">
@@ -112,8 +112,8 @@ export default async function ApprovalsPage() {
                           action={async () => {
                             "use server";
 
-                            await approveAppointment(
-                              appointment.appointment_id,
+                            await approveBooking(
+                              booking.appointment_id,
                             );
                           }}
                         >
@@ -126,7 +126,7 @@ export default async function ApprovalsPage() {
                           action={async () => {
                             "use server";
 
-                            await rejectAppointment(appointment.appointment_id);
+                            await rejectBooking(booking.appointment_id);
                           }}
                         >
                           <button className="bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-medium">

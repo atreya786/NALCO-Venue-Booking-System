@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 
 import { revalidatePath } from "next/cache";
 
-import { createAppointment, updateAppointment } from "@/lib/db/appointment";
+import { createBooking, updateBooking } from "@/lib/db/bookings";
 
-export async function createAppointmentAction(formData: FormData) {
+export async function createBookingAction(formData: FormData) {
   const session = await auth();
 
   if (!session) {
@@ -27,7 +27,7 @@ export async function createAppointmentAction(formData: FormData) {
 
   const endDateTime = new Date(`${endDate}T${endTime}`);
 
-  await createAppointment({
+  await createBooking({
     venue_id: Number(formData.get("venue_id")),
 
     requested_by: Number(session.user.id),
@@ -41,12 +41,12 @@ export async function createAppointmentAction(formData: FormData) {
     end_time: endDateTime,
   });
 
-  revalidatePath("/appointments");
+  revalidatePath("/bookings");
 
-  redirect("/appointments");
+  redirect("/bookings");
 }
 
-export async function updateAppointmentAction(formData: FormData) {
+export async function updateBookingAction(formData: FormData) {
   const session = await auth();
 
   if (!session) {
@@ -65,7 +65,7 @@ export async function updateAppointmentAction(formData: FormData) {
 
   const endDateTime = new Date(`${endDate}T${endTime}`);
 
-  await updateAppointment({
+  await updateBooking({
     appointment_id: Number(formData.get("appointment_id")),
 
     venue_id: Number(formData.get("venue_id")),
@@ -79,7 +79,7 @@ export async function updateAppointmentAction(formData: FormData) {
     end_time: endDateTime,
   });
 
-  revalidatePath("/appointments");
+  revalidatePath("/bookings");
 
-  redirect("/appointments");
+  redirect("/bookings");
 }

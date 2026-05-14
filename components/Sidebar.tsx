@@ -1,8 +1,11 @@
 import Link from "next/link";
 
-import { signOut } from "@/lib/auth";
+import { signOut,auth } from "@/lib/auth";
 
-export default function Sidebar() {
+export default async function Sidebar() {
+
+  const session = await auth();
+
   return (
     <aside
       className="
@@ -59,8 +62,8 @@ export default function Sidebar() {
             Dashboard
           </Link>
 
-          <Link
-            href="/appointments"
+          {session?.user?.role !== "STUDENT" && (<Link
+            href="/bookings"
             className="
                      px-4
                      py-3
@@ -70,8 +73,8 @@ export default function Sidebar() {
                      font-medium
                   "
           >
-            Appointments
-          </Link>
+            Bookings
+          </Link>)}
 
           <Link
             href="/approvals"

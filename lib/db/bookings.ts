@@ -2,7 +2,7 @@ import sql from "mssql";
 
 import connectDB from "../db";
 
-export async function getAppointments() {
+export async function getBookings() {
   const pool = await connectDB();
 
   const result = await pool?.request().query(`
@@ -10,7 +10,7 @@ export async function getAppointments() {
       a.*,
       u.name AS requested_by_name,
       v.venue_name
-    FROM Appointments a
+    FROM Bookings a
     JOIN Users u
       ON a.requested_by = u.user_id
     JOIN Venues v
@@ -21,7 +21,7 @@ export async function getAppointments() {
   return result?.recordset;
 }
 
-export async function createAppointment(data: {
+export async function createBooking(data: {
   venue_id: number;
   requested_by: number;
   purpose: string;
@@ -40,7 +40,7 @@ export async function createAppointment(data: {
       .input("description", sql.NVarChar, data.description)
       .input("start_time", sql.DateTime2, data.start_time)
       .input("end_time", sql.DateTime2, data.end_time).query(`
-  INSERT INTO Appointments (
+  INSERT INTO Bookings (
     venue_id,
     requested_by,
     purpose,
@@ -67,7 +67,7 @@ export async function createAppointment(data: {
 `);
 }
 
-export async function getAppointmentById(id: number) {
+export async function getBookingById(id: number) {
   const pool = await connectDB();
 
   const result = await pool?.request().input("id", sql.Int, id).query(`
@@ -80,7 +80,7 @@ export async function getAppointmentById(id: number) {
 
         v.venue_name
 
-      FROM Appointments a
+      FROM Bookings a
 
       JOIN Users u
         ON a.requested_by = u.user_id
@@ -94,7 +94,7 @@ export async function getAppointmentById(id: number) {
   return result?.recordset[0];
 }
 
-export async function updateAppointment(data: {
+export async function updateBooking(data: {
   appointment_id: number;
 
   venue_id: number;
@@ -118,7 +118,7 @@ export async function updateAppointment(data: {
       .input("description", sql.NVarChar, data.description)
       .input("start_time", sql.DateTime2, data.start_time)
       .input("end_time", sql.DateTime2, data.end_time).query(`
-        UPDATE Appointments
+        UPDATE Bookings
         SET
           venue_id = @venue_id,
           purpose = @purpose,

@@ -1,20 +1,45 @@
-import { createAppointmentAction } from "@/actions/appointment";
+import { notFound } from "next/navigation";
 
-export default function CreateAppointmentPage() {
+import { getBookingById } from "@/lib/db/bookings";
+
+import { updateBookingAction } from "@/actions/bookings";
+
+type Props = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+export default async function EditBookingPage({ params }: Props) {
+  const { id } = await params;
+
+  const booking = await getBookingById(Number(id));
+
+  if (!booking) {
+    notFound();
+  }
+
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold">Create Appointment</h1>
+      <h1 className="mb-6 text-2xl font-bold">Edit Booking</h1>
 
       <form
-        action={createAppointmentAction}
+        action={updateBookingAction}
         className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6"
       >
+        <input
+          type="hidden"
+          name="booking_id"
+          value={booking.appointment_id}
+        />
+
         <div>
           <label className="mb-2 block text-sm font-medium">Venue ID</label>
 
           <input
             type="number"
             name="venue_id"
+            defaultValue={booking.venue_id}
             required
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
@@ -26,6 +51,7 @@ export default function CreateAppointmentPage() {
           <input
             type="text"
             name="purpose"
+            defaultValue={booking.purpose}
             required
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
@@ -37,6 +63,7 @@ export default function CreateAppointmentPage() {
           <textarea
             name="description"
             rows={4}
+            defaultValue={booking.description}
             className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
           />
         </div>
@@ -48,6 +75,9 @@ export default function CreateAppointmentPage() {
             <input
               type="date"
               name="start_date"
+              defaultValue={
+                new Date(booking.start_time).toISOString().split("T")[0]
+              }
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -59,6 +89,9 @@ export default function CreateAppointmentPage() {
             <input
               type="time"
               name="start_time"
+              defaultValue={new Date(booking.start_time)
+                .toTimeString()
+                .slice(0, 5)}
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -72,6 +105,9 @@ export default function CreateAppointmentPage() {
             <input
               type="date"
               name="end_date"
+              defaultValue={
+                new Date(booking.end_time).toISOString().split("T")[0]
+              }
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -83,6 +119,9 @@ export default function CreateAppointmentPage() {
             <input
               type="time"
               name="end_time"
+              defaultValue={new Date(booking.end_time)
+                .toTimeString()
+                .slice(0, 5)}
               required
               className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
             />
@@ -93,7 +132,7 @@ export default function CreateAppointmentPage() {
           type="submit"
           className="rounded-lg bg-[var(--accent)] px-5 py-3 font-medium text-white hover:bg-[var(--accent-hover)]"
         >
-          Create Appointment
+          Update Booking
         </button>
       </form>
     </div>

@@ -17,7 +17,7 @@ export async function updateApprovalStatus(data: {
 
   if (data.role === "FACULTY") {
     query = `
-      UPDATE Appointments
+      UPDATE Bookings
       SET
         faculty_status = '${data.action}',
         status = '${data.action === "REJECTED" ? "REJECTED" : "PENDING"}'
@@ -27,7 +27,7 @@ export async function updateApprovalStatus(data: {
 
   if (data.role === "HOD") {
     query = `
-      UPDATE Appointments
+      UPDATE Bookings
       SET
         hod_status = '${data.action}',
         status = '${data.action === "REJECTED" ? "REJECTED" : "PENDING"}'
@@ -37,7 +37,7 @@ export async function updateApprovalStatus(data: {
 
   if (data.role === "ADMIN") {
     query = `
-      UPDATE Appointments
+      UPDATE Bookings
       SET
         admin_status = '${data.action}',
         status = '${data.action}',
