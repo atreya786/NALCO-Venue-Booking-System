@@ -38,7 +38,14 @@ export default async function AppointmentsPage() {
                 key={appointment.appointment_id}
                 className="border-b border-[var(--border)] transition-colors hover:bg-white/5"
               >
-                <td className="p-5">{appointment.purpose}</td>
+                <td className="p-5">
+                  <Link
+                    href={`/appointments/${appointment.appointment_id}`}
+                    className="font-medium text-[var(--accent)] hover:underline"
+                  >
+                    {appointment.purpose}
+                  </Link>
+                </td>
 
                 <td className="p-5 text-gray-300">{appointment.venue_name}</td>
 
