@@ -8,7 +8,7 @@ export default function Sidebar() {
       className="
             w-72
             min-h-screen
-            bg-[var(--sidebar)]
+            bg(--sidebar)
             text-white
             border-r
             border-white/10
