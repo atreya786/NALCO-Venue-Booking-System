@@ -15,7 +15,7 @@ export async function getAppointments() {
       ON a.requested_by = u.user_id
     JOIN Venues v
       ON a.venue_id = v.venue_id
-    ORDER BY a.created_at DESC
+    ORDER BY a.created_at ASC
   `);
 
   return result?.recordset;
@@ -40,23 +40,31 @@ export async function createAppointment(data: {
       .input("description", sql.NVarChar, data.description)
       .input("start_time", sql.DateTime2, data.start_time)
       .input("end_time", sql.DateTime2, data.end_time).query(`
-      INSERT INTO Appointments (
-        venue_id,
-        requested_by,
-        purpose,
-        description,
-        start_time,
-        end_time
-      )
-      VALUES (
-        @venue_id,
-        @requested_by,
-        @purpose,
-        @description,
-        @start_time,
-        @end_time
-      )
-    `);
+  INSERT INTO Appointments (
+    venue_id,
+    requested_by,
+    purpose,
+    description,
+    start_time,
+    end_time,
+    status,
+    faculty_status,
+    hod_status,
+    admin_status
+  )
+  VALUES (
+    @venue_id,
+    @requested_by,
+    @purpose,
+    @description,
+    @start_time,
+    @end_time,
+    'PENDING',
+    'PENDING',
+    'PENDING',
+    'PENDING'
+  )
+`);
 }
 
 export async function getAppointmentById(id: number) {
@@ -104,33 +112,20 @@ export async function updateAppointment(data: {
   if (pool)
     await pool
       .request()
-
       .input("appointment_id", sql.Int, data.appointment_id)
-
       .input("venue_id", sql.Int, data.venue_id)
-
       .input("purpose", sql.NVarChar, data.purpose)
-
       .input("description", sql.NVarChar, data.description)
-
       .input("start_time", sql.DateTime2, data.start_time)
-
       .input("end_time", sql.DateTime2, data.end_time).query(`
-      UPDATE Appointments
-
-      SET
-        venue_id = @venue_id,
-
-        purpose = @purpose,
-
-        description = @description,
-
-        start_time = @start_time,
-
-        end_time = @end_time,
-
-        updated_at = GETDATE()
-
-      WHERE appointment_id = @appointment_id
-    `);
+        UPDATE Appointments
+        SET
+          venue_id = @venue_id,
+          purpose = @purpose,
+          description = @description,
+          start_time = @start_time,
+          end_time = @end_time,
+          updated_at = GETDATE()
+        WHERE appointment_id = @appointment_id
+      `);
 }

@@ -31,22 +31,13 @@ export default async function VenuesPage() {
         <div>
           <h1
             className="
-                     text-4xl
+                     text-5xl
                      font-bold
                      text-[var(--foreground)]
                   "
           >
             Venues
           </h1>
-
-          <p
-            className="
-                     text-[var(--muted)]
-                     mt-2
-                  "
-          >
-            Manage all available venues
-          </p>
         </div>
 
         {session?.user.role === "ADMIN" && (
@@ -69,38 +60,40 @@ export default async function VenuesPage() {
       </div>
 
       {/* Table Container */}
-      <div
-        className="
-               overflow-x-auto
-               bg-[var(--card)]
-               border
-               border-[var(--border)]
-               rounded-2xl
-               shadow-xl
-            "
-      >
+      <div className="overflow-hidden rounded-3xl border border-[var(--border)]">
         <table className="w-full">
           {/* Table Header */}
-          <thead
-            className="
-                     bg-[var(--sidebar)]
-                     text-white
-                  "
-          >
+          <thead className="bg-[var(--accent)] text-white">
             <tr>
-              <th className="text-left p-5">Venue Name</th>
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Venue Id
+              </th>
 
-              <th className="text-left p-5">Location</th>
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Venue Name
+              </th>
 
-              <th className="text-left p-5">Capacity</th>
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Location
+              </th>
 
-              <th className="text-left p-5">Type</th>
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Capacity
+              </th>
+
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Type
+              </th>
 
               {session?.user.role === "ADMIN" && (
-                <th className="text-left p-5">Actions</th>
+                <th className="px-6 py-5 text-left text-lg font-semibold">
+                  Actions
+                </th>
               )}
 
-              <th className="text-left p-5">Status</th>
+              <th className="px-6 py-5 text-left text-lg font-semibold">
+                Status
+              </th>
             </tr>
           </thead>
 
@@ -109,69 +102,45 @@ export default async function VenuesPage() {
             {venues?.map((venue: any) => (
               <tr
                 key={venue.venue_id}
-                className="
-                           border-t
-                           border-[var(--border)]
-                           hover:bg-white/5
-                           transition-colors
-                        "
+                className="border-t border-[var(--border)] hover:bg-white/5 transition"
               >
-                <td className="p-5">
+                <td className="px-6 py-6 text-xl text-gray-300">
+                  {venue.venue_id}
+                </td>
+
+                <td className="px-6 py-6">
                   <Link
                     href={`/venues/${venue.venue_id}`}
-                    className="font-medium text-[var(--accent)] hover:underline"
+                    className="text-cyan-500 text-xl hover:underline"
                   >
                     {venue.venue_name}
                   </Link>
                 </td>
 
-                <td
-                  className="
-                              p-5
-                              text-[var(--muted)]
-                           "
-                >
+                <td className="px-6 py-6 text-xl text-gray-300">
                   {venue.location}
                 </td>
 
-                <td
-                  className="
-                              p-5
-                              text-[var(--foreground)]
-                           "
-                >
-                  {venue.capacity}
-                </td>
+                <td className="px-6 py-6 text-xl">{venue.capacity}</td>
 
-                <td
-                  className="
-                              p-5
-                              text-[var(--foreground)]
-                           "
-                >
-                  {venue.venue_type}
-                </td>
+                <td className="px-6 py-6 text-xl">{venue.venue_type}</td>
 
                 {/* Actions */}
                 {session?.user.role === "ADMIN" && (
-                  <td className="p-5">
+                  <td className="px-6 py-6">
                     <div className="flex items-center gap-3">
-                      {/* Edit */}
                       <Link
                         href={`/venues/${venue.venue_id}/edit`}
                         className="
-                                    inline-flex
-                                    items-center
-                                    bg-[var(--accent)]
-                                    hover:bg-[var(--accent-hover)]
-                                    text-white
-                                    px-4
-                                    py-2
-                                    rounded-lg
-                                    text-sm
-                                    font-medium
-                                    transition-colors
-                                 "
+                    bg-[var(--accent)]
+                    hover:bg-[var(--accent-hover)]
+                    text-white
+                    px-4
+                    py-2
+                    rounded-xl
+                    font-medium
+                    transition
+                  "
                       >
                         Edit
                       </Link>
@@ -185,26 +154,19 @@ export default async function VenuesPage() {
                         >
                           <button
                             className="
-      inline-flex
-      items-center
-      justify-center
-      bg-red-500/15
-      hover:bg-red-500
-      border
-      border-red-500/30
-      hover:border-red-500
-      text-red-400
-      hover:text-white
-      px-4
-      py-2
-      rounded-xl
-      text-sm
-      font-semibold
-      transition-all
-      duration-200
-      cursor-pointer
-      min-w-[120px]
-   "
+                        bg-red-500/15
+                        hover:bg-red-500
+                        border
+                        border-red-500/30
+                        hover:border-red-500
+                        text-red-400
+                        hover:text-white
+                        px-4
+                        py-2
+                        rounded-xl
+                        font-medium
+                        transition-all
+                      "
                           >
                             Deactivate
                           </button>
@@ -218,26 +180,19 @@ export default async function VenuesPage() {
                         >
                           <button
                             className="
-      inline-flex
-      items-center
-      justify-center
-      bg-green-500/15
-      hover:bg-green-500
-      border
-      border-green-500/30
-      hover:border-green-500
-      text-green-400
-      hover:text-white
-      px-4
-      py-2
-      rounded-xl
-      text-sm
-      font-semibold
-      transition-all
-      duration-200
-      cursor-pointer
-      min-w-[120px]
-   "
+                        bg-green-500/15
+                        hover:bg-green-500
+                        border
+                        border-green-500/30
+                        hover:border-green-500
+                        text-green-400
+                        hover:text-white
+                        px-4
+                        py-2
+                        rounded-xl
+                        font-medium
+                        transition-all
+                      "
                           >
                             Activate
                           </button>
@@ -246,34 +201,15 @@ export default async function VenuesPage() {
                     </div>
                   </td>
                 )}
-                <td className="p-5">
+
+                <td className="px-6 py-6">
                   {venue.is_active ? (
-                    <span
-                      className="
-               bg-green-500/20
-               text-green-400
-               px-3
-               py-1
-               rounded-full
-               text-sm
-               font-medium
-            "
-                    >
-                      Active
+                    <span className="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-medium">
+                      ACTIVE
                     </span>
                   ) : (
-                    <span
-                      className="
-               bg-red-500/20
-               text-red-400
-               px-3
-               py-1
-               rounded-full
-               text-sm
-               font-medium
-            "
-                    >
-                      Inactive
+                    <span className="bg-red-500/20 text-red-400 px-4 py-1 rounded-full text-sm font-medium">
+                      INACTIVE
                     </span>
                   )}
                 </td>

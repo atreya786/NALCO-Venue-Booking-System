@@ -10,7 +10,7 @@ export async function getVenues() {
       const result = await pool.request().query(`
         SELECT *
         FROM Venues
-        ORDER BY venue_id DESC
+        ORDER BY venue_id ASC
       `);
 
       return result.recordset;
