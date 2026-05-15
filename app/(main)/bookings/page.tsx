@@ -9,7 +9,7 @@ export default async function BookingsPage() {
   const bookings = await getBookings();
   const session = await auth();
 
-  if (!session || session?.user.role === "STUDENT") {
+  if (!session || session?.user.role === "APPRENTICE") {
     redirect("/");
   }
 

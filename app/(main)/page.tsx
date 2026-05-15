@@ -100,7 +100,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-5">
-            <WorkflowStep title="Faculty Approval" status="Completed" />
+            <WorkflowStep title="Guide Approval" status="Completed" />
 
             <WorkflowStep title="HOD Verification" status="In Progress" />
 

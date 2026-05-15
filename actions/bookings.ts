@@ -15,6 +15,12 @@ export async function createBookingAction(formData: FormData) {
     redirect("/login");
   }
 
+  const venue_id = Number(formData.get("venue_id"));
+
+  const purpose = String(formData.get("purpose"));
+
+  const description = String(formData.get("description"));
+
   const startDate = String(formData.get("start_date"));
 
   const startTime = String(formData.get("start_time"));
@@ -28,13 +34,15 @@ export async function createBookingAction(formData: FormData) {
   const endDateTime = new Date(`${endDate}T${endTime}`);
 
   await createBooking({
-    venue_id: Number(formData.get("venue_id")),
+    venue_id,
 
     requested_by: Number(session.user.id),
 
-    purpose: String(formData.get("purpose")),
+    role: session.user.role!,
 
-    description: String(formData.get("description")),
+    purpose,
+
+    description,
 
     start_time: startDateTime,
 

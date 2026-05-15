@@ -23,48 +23,101 @@ export async function getBookings() {
 
 export async function createBooking(data: {
   venue_id: number;
+
   requested_by: number;
+
+  role: string;
+
   purpose: string;
+
   description: string;
+
   start_time: Date;
+
   end_time: Date;
 }) {
   const pool = await connectDB();
 
-  if (pool)
-    await pool
-      .request()
-      .input("venue_id", sql.Int, data.venue_id)
-      .input("requested_by", sql.Int, data.requested_by)
-      .input("purpose", sql.NVarChar, data.purpose)
-      .input("description", sql.NVarChar, data.description)
-      .input("start_time", sql.DateTime2, data.start_time)
-      .input("end_time", sql.DateTime2, data.end_time).query(`
-  INSERT INTO Bookings (
-    venue_id,
-    requested_by,
-    purpose,
-    description,
-    start_time,
-    end_time,
-    status,
-    faculty_status,
-    hod_status,
-    admin_status
-  )
-  VALUES (
-    @venue_id,
-    @requested_by,
-    @purpose,
-    @description,
-    @start_time,
-    @end_time,
-    'PENDING',
-    'PENDING',
-    'PENDING',
-    'PENDING'
-  )
-`);
+  if (!pool) {
+    throw new Error("Database connection failed");
+  }
+
+  // Default statuses
+  let guide_status = "PENDING";
+
+  let hod_status = "PENDING";
+
+  let admin_status = "PENDING";
+
+  let status = "PENDING";
+
+  let approved_at = null;
+
+  // GUIDE booking
+  if (data.role === "GUIDE") {
+    guide_status = "SKIPPED";
+  }
+
+  // HOD booking
+  if (data.role === "HOD") {
+    guide_status = "SKIPPED";
+
+    hod_status = "SKIPPED";
+  }
+
+  // ADMIN booking
+  if (data.role === "ADMIN") {
+    guide_status = "SKIPPED";
+
+    hod_status = "SKIPPED";
+
+    admin_status = "SKIPPED";
+
+    status = "APPROVED";
+
+    approved_at = new Date();
+  }
+
+  await pool
+    .request()
+    .input("venue_id", sql.Int, data.venue_id)
+    .input("requested_by", sql.Int, data.requested_by)
+    .input("purpose", sql.NVarChar, data.purpose)
+    .input("description", sql.NVarChar, data.description)
+    .input("start_time", sql.DateTime2, data.start_time)
+    .input("end_time", sql.DateTime2, data.end_time)
+    .input("status", sql.NVarChar, status)
+    .input("guide_status", sql.NVarChar, guide_status)
+    .input("hod_status", sql.NVarChar, hod_status)
+    .input("admin_status", sql.NVarChar, admin_status)
+    .input("approved_at", sql.DateTime2, approved_at).query(`
+      INSERT INTO Bookings (
+        venue_id,
+        requested_by,
+        purpose,
+        description,
+        start_time,
+        end_time,
+        status,
+        guide_status,
+        hod_status,
+        admin_status,
+        approved_at
+      )
+      VALUES (
+        @venue_id,
+        @requested_by,
+        @purpose,
+        @description,
+        @start_time,
+        @end_time,
+        @status,
+        @guide_status,
+        @hod_status,
+        @admin_status,
+        @approved_at
+      )
+    `);
 }
 
 export async function getBookingById(id: number) {

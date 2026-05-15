@@ -2,6 +2,10 @@ import sql from "mssql";
 
 import connectDB from "../db";
 
+function isApprovedOrSkipped(status: string) {
+  return status === "APPROVED" || status === "SKIPPED";
+}
+
 export async function updateApprovalStatus(data: {
   appointment_id: number;
 
@@ -15,7 +19,7 @@ export async function updateApprovalStatus(data: {
     throw new Error("Database connection failed");
   }
 
-  // Get current booking state
+  // Get booking
   const result = await pool.request().input("id", sql.Int, data.appointment_id)
     .query(`
       SELECT *
@@ -29,21 +33,21 @@ export async function updateApprovalStatus(data: {
     throw new Error("Booking not found");
   }
 
-  // Prevent changes after final state
+  // Prevent finalized changes
   if (booking.status === "APPROVED" || booking.status === "REJECTED") {
     throw new Error("This booking is already finalized");
   }
 
-  // FACULTY RULES
-  if (data.role === "FACULTY") {
-    if (booking.faculty_status !== "PENDING") {
-      throw new Error("Faculty approval already completed");
+  // GUIDE APPROVAL
+  if (data.role === "GUIDE") {
+    if (booking.guide_status !== "PENDING") {
+      throw new Error("Guide approval already completed");
     }
 
     await pool.request().input("id", sql.Int, data.appointment_id).query(`
         UPDATE Bookings
         SET
-          faculty_status = '${data.action}',
+          guide_status = '${data.action}',
           status = '${data.action === "REJECTED" ? "REJECTED" : "PENDING"}'
         WHERE appointment_id = @id
       `);
@@ -51,10 +55,10 @@ export async function updateApprovalStatus(data: {
     return;
   }
 
-  // HOD RULES
+  // HOD APPROVAL
   if (data.role === "HOD") {
-    if (booking.faculty_status !== "APPROVED") {
-      throw new Error("Faculty approval required first");
+    if (!isApprovedOrSkipped(booking.guide_status)) {
+      throw new Error("Guide approval required first");
     }
 
     if (booking.hod_status !== "PENDING") {
@@ -72,13 +76,13 @@ export async function updateApprovalStatus(data: {
     return;
   }
 
-  // ADMIN RULES
+  // ADMIN APPROVAL
   if (data.role === "ADMIN") {
-    if (booking.faculty_status !== "APPROVED") {
-      throw new Error("Faculty approval required first");
+    if (!isApprovedOrSkipped(booking.guide_status)) {
+      throw new Error("Guide approval required first");
     }
 
-    if (booking.hod_status !== "APPROVED") {
+    if (!isApprovedOrSkipped(booking.hod_status)) {
       throw new Error("HOD approval required first");
     }
 
@@ -104,4 +108,3 @@ export async function updateApprovalStatus(data: {
 
   throw new Error("Invalid role");
 }
-

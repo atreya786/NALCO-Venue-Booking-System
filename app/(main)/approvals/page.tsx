@@ -45,7 +45,7 @@ export default async function ApprovalsPage() {
               </th>
 
               <th className="px-6 py-5 text-left text-lg font-semibold">
-                Faculty
+                Guide
               </th>
 
               <th className="px-6 py-5 text-left text-lg font-semibold">HOD</th>
@@ -64,22 +64,22 @@ export default async function ApprovalsPage() {
             {bookings?.map((booking: any, index: number) => {
               const role = session.user.role;
 
-              const canFacultyApprove =
-                role === "FACULTY" && booking.faculty_status === "PENDING";
+              const canGuideApprove =
+                role === "GUIDE" && booking.guide_status === "PENDING";
 
               const canHodApprove =
                 role === "HOD" &&
-                booking.faculty_status === "APPROVED" &&
+                booking.guide_status === "APPROVED" &&
                 booking.hod_status === "PENDING";
 
               const canAdminApprove =
                 role === "ADMIN" &&
-                booking.faculty_status === "APPROVED" &&
+                booking.guide_status === "APPROVED" &&
                 booking.hod_status === "APPROVED" &&
                 booking.admin_status === "PENDING";
 
               const canApprove =
-                canFacultyApprove || canHodApprove || canAdminApprove;
+                canGuideApprove || canHodApprove || canAdminApprove;
 
               return (
                 <tr
@@ -87,7 +87,7 @@ export default async function ApprovalsPage() {
                   className="border-t border-[var(--border)] hover:bg-white/5 transition"
                 >
                   <td className="px-6 py-6 text-cyan-500 text-xl">
-                    {index+1}
+                    {index + 1}
                   </td>
 
                   <td className="px-6 py-6 text-cyan-500 text-xl">
@@ -99,7 +99,7 @@ export default async function ApprovalsPage() {
                   </td>
 
                   <td className="px-6 py-6">
-                    <StatusBadge status={booking.faculty_status} />
+                    <StatusBadge status={booking.guide_status} />
                   </td>
 
                   <td className="px-6 py-6">

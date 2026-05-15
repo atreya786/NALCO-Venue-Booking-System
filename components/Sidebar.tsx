@@ -62,7 +62,7 @@ export default async function Sidebar() {
             Dashboard
           </Link>
 
-          {session?.user?.role !== "STUDENT" && (<Link
+          {session?.user?.role !== "APPRENTICE" && (<Link
             href="/bookings"
             className="
                      px-4
