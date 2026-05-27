@@ -2,9 +2,7 @@ import sql from "mssql";
 
 import connectDB from "../db";
 
-function isApprovedOrSkipped(status: string) {
-  return status === "APPROVED" || status === "SKIPPED";
-}
+import { updateVenueAllocation } from "../utils/allocation";
 
 export async function updateApprovalStatus(data: {
   appointment_id: number;
@@ -34,8 +32,8 @@ export async function updateApprovalStatus(data: {
   }
 
   // Prevent finalized changes
-  if (booking.status === "APPROVED" || booking.status === "REJECTED") {
-    throw new Error("This booking is already finalized");
+  if (booking.status === "REJECTED" || booking.status === "CANCELLED") {
+    throw new Error("This booking is finalized");
   }
 
   // GUIDE APPROVAL
@@ -57,7 +55,7 @@ export async function updateApprovalStatus(data: {
 
   // HOD APPROVAL
   if (data.role === "HOD") {
-    if (!isApprovedOrSkipped(booking.guide_status)) {
+    if (booking.guide_status !== "APPROVED") {
       throw new Error("Guide approval required first");
     }
 
@@ -78,11 +76,7 @@ export async function updateApprovalStatus(data: {
 
   // ADMIN APPROVAL
   if (data.role === "ADMIN") {
-    if (!isApprovedOrSkipped(booking.guide_status)) {
-      throw new Error("Guide approval required first");
-    }
-
-    if (!isApprovedOrSkipped(booking.hod_status)) {
+    if (booking.hod_status !== "APPROVED") {
       throw new Error("HOD approval required first");
     }
 
@@ -90,18 +84,30 @@ export async function updateApprovalStatus(data: {
       throw new Error("Admin approval already completed");
     }
 
+    // REJECT
+    if (data.action === "REJECTED") {
+      await pool.request().input("id", sql.Int, data.appointment_id).query(`
+          UPDATE Bookings
+          SET
+            admin_status = 'REJECTED',
+            status = 'REJECTED'
+          WHERE appointment_id = @id
+        `);
+
+      return;
+    }
+
+    // APPROVE
     await pool.request().input("id", sql.Int, data.appointment_id).query(`
         UPDATE Bookings
         SET
-          admin_status = '${data.action}',
-          status = '${data.action}',
-          approved_at = CASE
-            WHEN '${data.action}' = 'APPROVED'
-            THEN GETDATE()
-            ELSE approved_at
-          END
+          admin_status = 'APPROVED',
+          status = 'APPROVED'
         WHERE appointment_id = @id
       `);
+
+    // RUN ALLOCATION ENGINE
+    await updateVenueAllocation(booking.venue_id, booking.booking_date);
 
     return;
   }
