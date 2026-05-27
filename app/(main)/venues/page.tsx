@@ -12,133 +12,203 @@ export default async function VenuesPage() {
   const session = await auth();
 
   return (
-    <div
-      className="
-            min-h-screen
-            bg-[var(--background)]
-            p-6
-         "
-    >
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-5xl font-bold mb-5">Venues</h1>
-        <Link
-          href="/bookings/create"
-          className="bg-[var(--accent)]
-                     hover:bg-[var(--accent-hover)]
-                     text-white
-                     p-3
-                     text-lg
-                     rounded-xl
-                     transition-colors"
-        >
-          Create Booking
-        </Link>
+        <div>
+          <h1 className="text-5xl font-bold">Venues</h1>
 
-        {session?.user.role === "ADMIN" && (
+          <p className="mt-2 text-[var(--muted)]">
+            Manage active venues and venue allocation workflow.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-4">
           <Link
-            href="/venues/create"
+            href="/bookings/create"
             className="
-                     bg-[var(--accent)]
-                     hover:bg-[var(--accent-hover)]
-                     text-white
-                     p-3
-                     text-lg
-                     rounded-xl
-                     transition-colors
-                  "
+              rounded-2xl
+              bg-[var(--accent)]
+              px-5
+              py-3
+              text-lg
+              font-medium
+              text-white
+              transition
+              hover:bg-[var(--accent-hover)]
+            "
           >
-            + Add New Venue
+            Create Booking
           </Link>
-        )}
+
+          {session?.user.role === "ADMIN" && (
+            <Link
+              href="/venues/create"
+              className="
+                rounded-2xl
+                border
+                border-[var(--border)]
+                bg-white/5
+                px-5
+                py-3
+                text-lg
+                font-medium
+                transition
+                hover:bg-white/10
+              "
+            >
+              + Add Venue
+            </Link>
+          )}
+        </div>
       </div>
 
-      {/* Table Container */}
-      <div className="overflow-hidden rounded-3xl border border-[var(--border)]">
+      {/* Table */}
+      <div
+        className="
+          overflow-hidden
+          rounded-3xl
+          border
+          border-[var(--border)]
+          bg-[var(--card)]
+        "
+      >
         <table className="w-full">
-          {/* Table Header */}
-          <thead className="bg-[var(--accent)] text-white">
+          {/* Header */}
+          <thead
+            className="
+              bg-[var(--accent)]
+              text-white
+            "
+          >
             <tr>
-              <th className="px-6 py-5 text-left text-lg font-semibold">
-                Venue Id
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                ID
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
-                Venue Name
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                Venue
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Location
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Capacity
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Type
               </th>
 
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                Status
+              </th>
+
               {session?.user.role === "ADMIN" && (
-                <th className="px-6 py-5 text-left text-lg font-semibold">
+                <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                   Actions
                 </th>
               )}
-
-              <th className="px-6 py-5 text-left text-lg font-semibold">
-                Status
-              </th>
             </tr>
           </thead>
 
-          {/* Table Body */}
+          {/* Body */}
           <tbody>
             {venues?.map((venue: any) => (
               <tr
                 key={venue.venue_id}
-                className="border-t border-[var(--border)] hover:bg-white/5 transition"
+                className="
+                    border-t
+                    border-[var(--border)]
+                    transition
+                    hover:bg-white/5
+                  "
               >
-                <td className="px-6 py-6 text-xl text-gray-300">
-                  {venue.venue_id}
-                </td>
+                {/* ID */}
+                <td className="px-6 py-5 text-gray-400">{venue.venue_id}</td>
 
-                <td className="px-6 py-6">
+                {/* Venue */}
+                <td className="px-6 py-5">
                   <Link
                     href={`/venues/${venue.venue_id}`}
-                    className="text-cyan-500 text-xl hover:underline"
+                    className="
+                        text-lg
+                        font-medium
+                        text-cyan-400
+                        hover:underline
+                      "
                   >
                     {venue.venue_name}
                   </Link>
                 </td>
 
-                <td className="px-6 py-6 text-xl text-gray-300">
-                  {venue.location}
+                {/* Location */}
+                <td className="px-6 py-5 text-gray-300">{venue.location}</td>
+
+                {/* Capacity */}
+                <td className="px-6 py-5">{venue.capacity}</td>
+
+                {/* Type */}
+                <td className="px-6 py-5">{venue.venue_type}</td>
+
+                {/* Status */}
+                <td className="px-6 py-5">
+                  {venue.is_active ? (
+                    <span
+                      className="
+                          rounded-full
+                          bg-green-500/15
+                          px-3
+                          py-1
+                          text-xs
+                          font-medium
+                          text-green-400
+                        "
+                    >
+                      ACTIVE
+                    </span>
+                  ) : (
+                    <span
+                      className="
+                          rounded-full
+                          bg-red-500/15
+                          px-3
+                          py-1
+                          text-xs
+                          font-medium
+                          text-red-400
+                        "
+                    >
+                      INACTIVE
+                    </span>
+                  )}
                 </td>
-
-                <td className="px-6 py-6 text-xl">{venue.capacity}</td>
-
-                <td className="px-6 py-6 text-xl">{venue.venue_type}</td>
 
                 {/* Actions */}
                 {session?.user.role === "ADMIN" && (
-                  <td className="px-6 py-6">
+                  <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
+                      {/* Edit */}
                       <Link
                         href={`/venues/${venue.venue_id}/edit`}
                         className="
-                    bg-[var(--accent)]
-                    hover:bg-[var(--accent-hover)]
-                    text-white
-                    px-4
-                    py-2
-                    rounded-xl
-                    font-medium
-                    transition
-                  "
+                            rounded-xl
+                            bg-[var(--accent)]
+                            px-4
+                            py-2
+                            text-sm
+                            font-medium
+                            text-white
+                            transition
+                            hover:bg-[var(--accent-hover)]
+                          "
                       >
                         Edit
                       </Link>
 
+                      {/* Toggle */}
                       {venue.is_active ? (
                         <form
                           action={deactivateVenue.bind(
@@ -148,19 +218,19 @@ export default async function VenuesPage() {
                         >
                           <button
                             className="
-                        bg-red-500/15
-                        hover:bg-red-500
-                        border
-                        border-red-500/30
-                        hover:border-red-500
-                        text-red-400
-                        hover:text-white
-                        px-4
-                        py-2
-                        rounded-xl
-                        font-medium
-                        transition-all
-                      "
+                                rounded-xl
+                                border
+                                border-red-500/30
+                                bg-red-500/10
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                text-red-400
+                                transition
+                                hover:bg-red-500
+                                hover:text-white
+                              "
                           >
                             Deactivate
                           </button>
@@ -174,19 +244,19 @@ export default async function VenuesPage() {
                         >
                           <button
                             className="
-                        bg-green-500/15
-                        hover:bg-green-500
-                        border
-                        border-green-500/30
-                        hover:border-green-500
-                        text-green-400
-                        hover:text-white
-                        px-4
-                        py-2
-                        rounded-xl
-                        font-medium
-                        transition-all
-                      "
+                                rounded-xl
+                                border
+                                border-green-500/30
+                                bg-green-500/10
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                text-green-400
+                                transition
+                                hover:bg-green-500
+                                hover:text-white
+                              "
                           >
                             Activate
                           </button>
@@ -195,18 +265,6 @@ export default async function VenuesPage() {
                     </div>
                   </td>
                 )}
-
-                <td className="px-6 py-6">
-                  {venue.is_active ? (
-                    <span className="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-medium">
-                      ACTIVE
-                    </span>
-                  ) : (
-                    <span className="bg-red-500/20 text-red-400 px-4 py-1 rounded-full text-sm font-medium">
-                      INACTIVE
-                    </span>
-                  )}
-                </td>
               </tr>
             ))}
           </tbody>

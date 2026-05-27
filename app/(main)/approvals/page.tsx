@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 import { getBookings, getBookingsByUserId } from "@/lib/db/bookings";
+
 import { approveBooking, rejectBooking } from "@/actions/approval";
 
 export default async function ApprovalsPage() {
@@ -12,49 +13,79 @@ export default async function ApprovalsPage() {
     redirect("/login");
   }
 
-  let bookings;
-
-  if (session.user.role === "ADMIN") {
-    bookings = await getBookings();
-  } else {
-    bookings = await getBookingsByUserId(Number(session.user.id));
-  }
+  const bookings =
+    session.user.role === "ADMIN"
+      ? await getBookings()
+      : await getBookingsByUserId(Number(session.user.id));
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-5xl font-bold">Approvals</h1>
+
+          <p className="mt-2 text-[var(--muted)]">
+            Manage booking approval workflow.
+          </p>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-[var(--border)]">
+      {/* Table */}
+      <div
+        className="
+          overflow-hidden
+          rounded-3xl
+          border
+          border-[var(--border)]
+          bg-[var(--card)]
+        "
+      >
         <table className="w-full">
-          <thead className="bg-cyan-700">
+          <thead
+            className="
+              bg-[var(--accent)]
+              text-white
+            "
+          >
             <tr>
-              <th className="px-6 py-5 text-left text-lg font-semibold">
-                Sl No.
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                #
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Purpose
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                Venue
+              </th>
+
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                Booking Date
+              </th>
+
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Requested By
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Guide
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">HOD</th>
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                HOD
+              </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Admin
               </th>
 
-              <th className="px-6 py-5 text-left text-lg font-semibold">
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
+                Allocation
+              </th>
+
+              <th className="px-6 py-5 text-left text-sm font-semibold uppercase tracking-wide">
                 Actions
               </th>
             </tr>
@@ -84,33 +115,99 @@ export default async function ApprovalsPage() {
               return (
                 <tr
                   key={booking.appointment_id}
-                  className="border-t border-[var(--border)] hover:bg-white/5 transition"
+                  className="
+                      border-t
+                      border-[var(--border)]
+                      transition
+                      hover:bg-white/5
+                    "
                 >
-                  <td className="px-6 py-6 text-cyan-500 text-xl">
+                  {/* Serial */}
+                  <td className="px-6 py-5 text-sm text-gray-400">
                     {index + 1}
                   </td>
 
-                  <td className="px-6 py-6 text-cyan-500 text-xl">
-                    {booking.purpose}
+                  {/* Purpose */}
+                  <td className="px-6 py-5">
+                    <p className="font-medium text-cyan-400">
+                      {booking.purpose}
+                    </p>
                   </td>
 
-                  <td className="px-6 py-6 text-xl">
-                    {booking.requested_by_name}
+                  {/* Venue */}
+                  <td className="px-6 py-5 text-gray-300">
+                    {booking.venue_name}
                   </td>
 
-                  <td className="px-6 py-6">
+                  {/* Booking Date */}
+                  <td className="px-6 py-5 text-gray-300">
+                    {new Date(booking.booking_date).toLocaleDateString()}
+                  </td>
+
+                  {/* Requested By */}
+                  <td className="px-6 py-5">
+                    <div>
+                      <p className="font-medium">{booking.requested_by_name}</p>
+
+                      <p className="text-sm text-[var(--muted)]">
+                        {booking.requested_by_role}
+                      </p>
+                    </div>
+                  </td>
+
+                  {/* Guide */}
+                  <td className="px-6 py-5">
                     <StatusBadge status={booking.guide_status} />
                   </td>
 
-                  <td className="px-6 py-6">
+                  {/* HOD */}
+                  <td className="px-6 py-5">
                     <StatusBadge status={booking.hod_status} />
                   </td>
 
-                  <td className="px-6 py-6">
+                  {/* Admin */}
+                  <td className="px-6 py-5">
                     <StatusBadge status={booking.admin_status} />
                   </td>
 
-                  <td className="px-6 py-6">
+                  {/* Allocation */}
+                  <td className="px-6 py-5">
+                    {booking.status === "APPROVED" && booking.is_allocated ? (
+                      <span
+                        className="
+                            rounded-full
+                            bg-green-500/15
+                            px-3
+                            py-1
+                            text-xs
+                            font-medium
+                            text-green-400
+                          "
+                      >
+                        ALLOCATED
+                      </span>
+                    ) : booking.status === "APPROVED" &&
+                      !booking.is_allocated ? (
+                      <span
+                        className="
+                            rounded-full
+                            bg-orange-500/15
+                            px-3
+                            py-1
+                            text-xs
+                            font-medium
+                            text-orange-400
+                          "
+                      >
+                        WAITING
+                      </span>
+                    ) : (
+                      <span className="text-sm text-[var(--muted)]">—</span>
+                    )}
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-6 py-5">
                     {canApprove ? (
                       <div className="flex gap-3">
                         <form
@@ -120,7 +217,18 @@ export default async function ApprovalsPage() {
                             await approveBooking(booking.appointment_id);
                           }}
                         >
-                          <button className="bg-green-600 hover:bg-green-700 transition px-4 py-2 rounded-xl font-medium">
+                          <button
+                            className="
+                                rounded-xl
+                                bg-green-600
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                transition
+                                hover:bg-green-700
+                              "
+                          >
                             Approve
                           </button>
                         </form>
@@ -132,13 +240,26 @@ export default async function ApprovalsPage() {
                             await rejectBooking(booking.appointment_id);
                           }}
                         >
-                          <button className="bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-xl font-medium">
+                          <button
+                            className="
+                                rounded-xl
+                                bg-red-600
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                transition
+                                hover:bg-red-700
+                              "
+                          >
                             Reject
                           </button>
                         </form>
                       </div>
                     ) : (
-                      <span className="text-zinc-500">No Actions</span>
+                      <span className="text-sm text-[var(--muted)]">
+                        No Actions
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -154,7 +275,17 @@ export default async function ApprovalsPage() {
 function StatusBadge({ status }: { status: string }) {
   if (status === "APPROVED") {
     return (
-      <span className="bg-green-500/20 text-green-400 px-4 py-1 rounded-full text-sm font-medium">
+      <span
+        className="
+          rounded-full
+          bg-green-500/15
+          px-3
+          py-1
+          text-xs
+          font-medium
+          text-green-400
+        "
+      >
         APPROVED
       </span>
     );
@@ -162,14 +293,34 @@ function StatusBadge({ status }: { status: string }) {
 
   if (status === "REJECTED") {
     return (
-      <span className="bg-red-500/20 text-red-400 px-4 py-1 rounded-full text-sm font-medium">
+      <span
+        className="
+          rounded-full
+          bg-red-500/15
+          px-3
+          py-1
+          text-xs
+          font-medium
+          text-red-400
+        "
+      >
         REJECTED
       </span>
     );
   }
 
   return (
-    <span className="bg-yellow-500/20 text-yellow-400 px-4 py-1 rounded-full text-sm font-medium">
+    <span
+      className="
+        rounded-full
+        bg-yellow-500/15
+        px-3
+        py-1
+        text-xs
+        font-medium
+        text-yellow-400
+      "
+    >
       PENDING
     </span>
   );

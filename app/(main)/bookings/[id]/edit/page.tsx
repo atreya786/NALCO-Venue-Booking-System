@@ -21,18 +21,30 @@ export default async function EditBookingPage({ params }: Props) {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="mb-6 text-2xl font-bold">Edit Booking</h1>
+      <h1 className="mb-2 text-3xl font-bold">Edit Booking</h1>
+
+      <p className="mb-6 text-[var(--muted)]">
+        Update booking request details.
+      </p>
 
       <form
         action={updateBookingAction}
-        className="space-y-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6"
+        className="
+          space-y-5
+          rounded-2xl
+          border
+          border-[var(--border)]
+          bg-[var(--card)]
+          p-6
+        "
       >
         <input
           type="hidden"
-          name="booking_id"
+          name="appointment_id"
           value={booking.appointment_id}
         />
 
+        {/* Venue */}
         <div>
           <label className="mb-2 block text-sm font-medium">Venue ID</label>
 
@@ -41,10 +53,46 @@ export default async function EditBookingPage({ params }: Props) {
             name="venue_id"
             defaultValue={booking.venue_id}
             required
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
+            className="
+              w-full
+              rounded-lg
+              border
+              border-[var(--border)]
+              bg-[var(--background)]
+              p-3
+              outline-none
+              focus:border-[var(--accent)]
+            "
           />
         </div>
 
+        {/* Booking Date */}
+        <div>
+          <label className="mb-2 block text-sm font-medium">Booking Date</label>
+
+          <input
+            type="date"
+            name="booking_date"
+            defaultValue={
+              new Date(booking.booking_date).toISOString().split("T")[0]
+            }
+            required
+            className="
+              w-full
+              rounded-lg
+              border
+              border-[var(--border)]
+              bg-[var(--background)]
+              p-3
+              text-white
+              outline-none
+              [color-scheme:dark]
+              focus:border-[var(--accent)]
+            "
+          />
+        </div>
+
+        {/* Purpose */}
         <div>
           <label className="mb-2 block text-sm font-medium">Purpose</label>
 
@@ -53,10 +101,20 @@ export default async function EditBookingPage({ params }: Props) {
             name="purpose"
             defaultValue={booking.purpose}
             required
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
+            className="
+              w-full
+              rounded-lg
+              border
+              border-[var(--border)]
+              bg-[var(--background)]
+              p-3
+              outline-none
+              focus:border-[var(--accent)]
+            "
           />
         </div>
 
+        {/* Description */}
         <div>
           <label className="mb-2 block text-sm font-medium">Description</label>
 
@@ -64,73 +122,48 @@ export default async function EditBookingPage({ params }: Props) {
             name="description"
             rows={4}
             defaultValue={booking.description}
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3"
+            className="
+              w-full
+              rounded-lg
+              border
+              border-[var(--border)]
+              bg-[var(--background)]
+              p-3
+              outline-none
+              focus:border-[var(--accent)]
+            "
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="mb-2 block text-sm font-medium">Start Date</label>
-
-            <input
-              type="date"
-              name="start_date"
-              defaultValue={
-                new Date(booking.start_time).toISOString().split("T")[0]
-              }
-              required
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium">Start Time</label>
-
-            <input
-              type="time"
-              name="start_time"
-              defaultValue={new Date(booking.start_time)
-                .toTimeString()
-                .slice(0, 5)}
-              required
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
-            />
-          </div>
+        {/* Notice */}
+        <div
+          className="
+            rounded-xl
+            border
+            border-yellow-500/20
+            bg-yellow-500/10
+            p-4
+            text-sm
+            text-yellow-300
+          "
+        >
+          Updating booking details may affect allocation priority and queue
+          position.
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="mb-2 block text-sm font-medium">End Date</label>
-
-            <input
-              type="date"
-              name="end_date"
-              defaultValue={
-                new Date(booking.end_time).toISOString().split("T")[0]
-              }
-              required
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium">End Time</label>
-
-            <input
-              type="time"
-              name="end_time"
-              defaultValue={new Date(booking.end_time)
-                .toTimeString()
-                .slice(0, 5)}
-              required
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-white [color-scheme:dark]"
-            />
-          </div>
-        </div>
-
+        {/* Submit */}
         <button
           type="submit"
-          className="rounded-lg bg-[var(--accent)] px-5 py-3 font-medium text-white hover:bg-[var(--accent-hover)]"
+          className="
+            rounded-lg
+            bg-[var(--accent)]
+            px-5
+            py-3
+            font-medium
+            text-white
+            transition
+            hover:bg-[var(--accent-hover)]
+          "
         >
           Update Booking
         </button>

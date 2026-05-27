@@ -17,41 +17,31 @@ export async function createBookingAction(formData: FormData) {
 
   const venue_id = Number(formData.get("venue_id"));
 
+  const booking_date = String(formData.get("booking_date"));
+
   const purpose = String(formData.get("purpose"));
 
   const description = String(formData.get("description"));
-
-  const startDate = String(formData.get("start_date"));
-
-  const startTime = String(formData.get("start_time"));
-
-  const endDate = String(formData.get("end_date"));
-
-  const endTime = String(formData.get("end_time"));
-
-  const startDateTime = new Date(`${startDate}T${startTime}`);
-
-  const endDateTime = new Date(`${endDate}T${endTime}`);
 
   await createBooking({
     venue_id,
 
     requested_by: Number(session.user.id),
 
-    role: session.user.role!,
+    booking_date,
 
     purpose,
 
     description,
-
-    start_time: startDateTime,
-
-    end_time: endDateTime,
   });
+
+  revalidatePath("/bookings");
 
   revalidatePath("/approvals");
 
-  redirect("/approvals");
+  revalidatePath("/queue");
+
+  redirect("/bookings");
 }
 
 export async function updateBookingAction(formData: FormData) {
@@ -61,33 +51,21 @@ export async function updateBookingAction(formData: FormData) {
     redirect("/login");
   }
 
-  const startDate = String(formData.get("start_date"));
-
-  const startTime = String(formData.get("start_time"));
-
-  const endDate = String(formData.get("end_date"));
-
-  const endTime = String(formData.get("end_time"));
-
-  const startDateTime = new Date(`${startDate}T${startTime}`);
-
-  const endDateTime = new Date(`${endDate}T${endTime}`);
-
   await updateBooking({
     appointment_id: Number(formData.get("appointment_id")),
 
     venue_id: Number(formData.get("venue_id")),
 
+    booking_date: String(formData.get("booking_date")),
+
     purpose: String(formData.get("purpose")),
 
     description: String(formData.get("description")),
-
-    start_time: startDateTime,
-
-    end_time: endDateTime,
   });
 
   revalidatePath("/bookings");
+
+  revalidatePath("/queue");
 
   redirect("/bookings");
 }

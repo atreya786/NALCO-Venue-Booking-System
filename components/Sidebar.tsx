@@ -1,113 +1,105 @@
 import Link from "next/link";
 
-import { signOut,auth } from "@/lib/auth";
+import { signOut, auth } from "@/lib/auth";
 
 export default async function Sidebar() {
-
   const session = await auth();
 
   return (
     <aside
       className="
-            w-50
-            min-h-screen
-            bg(--sidebar)
-            text-white
-            border-r
-            border-white/10
-            flex
-            flex-col
-            justify-between
-            p-6
-         "
+        flex
+        min-h-screen
+        w-72
+        flex-col
+        justify-between
+        border-r
+        border-white/10
+        bg-[var(--sidebar)]
+        p-6
+        text-white
+      "
     >
-      {/* Top Section */}
+      {/* Top */}
       <div>
-        {/* Logo / Title */}
+        {/* Logo */}
         <div className="mb-10">
-          <h1
-            className="
-                     text-2xl
-                     font-bold
-                     leading-snug
-                  "
-          >
-            NALCO
-          </h1>
+          <h1 className="text-3xl font-black">NALCO</h1>
 
-          <p
-            className="
-                     text-sm
-                     text-white/70
-                     mt-1
-                  "
-          >
-            Venue Booking System
-          </p>
+          <p className="mt-2 text-sm text-white/60">Venue Allocation System</p>
+        </div>
+
+        {/* User Info */}
+        <div
+          className="
+            mb-8
+            rounded-2xl
+            border
+            border-white/10
+            bg-white/5
+            p-4
+          "
+        >
+          <p className="text-sm text-white/60">Logged In As</p>
+
+          <h2 className="mt-1 text-lg font-semibold">{session?.user.name}</h2>
+
+          <div className="mt-3">
+            <span
+              className="
+                rounded-full
+                bg-cyan-500/15
+                px-3
+                py-1
+                text-xs
+                font-medium
+                text-cyan-400
+              "
+            >
+              {session?.user.role}
+            </span>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col gap-2">
-          <Link
-            href="/"
-            className="
-                     px-4
-                     py-3
-                     rounded-xl
-                     hover:bg-white/10
-                     transition-colors
-                     font-medium
-                  "
-          >
-            Dashboard
-          </Link>
+        <nav className="space-y-2">
+          <SidebarLink href="/" label="Dashboard" />
 
-          {session?.user?.role !== "APPRENTICE" && (<Link
-            href="/bookings"
-            className="
-                     px-4
-                     py-3
-                     rounded-xl
-                     hover:bg-white/10
-                     transition-colors
-                     font-medium
-                  "
-          >
-            Bookings
-          </Link>)}
+          <SidebarLink href="/bookings" label="Bookings" />
 
-          <Link
-            href="/approvals"
-            className="
-                     px-4
-                     py-3
-                     rounded-xl
-                     hover:bg-white/10
-                     transition-colors
-                     font-medium
-                  "
-          >
-            Approvals
-          </Link>
+          <SidebarLink href="/approvals" label="Approvals" />
 
-          <Link
-            href="/venues"
-            className="
-                     px-4
-                     py-3
-                     rounded-xl
-                     hover:bg-white/10
-                     transition-colors
-                     font-medium
-                  "
-          >
-            Venues
-          </Link>
+          <SidebarLink href="/queue" label="Allocation Queue" />
+
+          <SidebarLink href="/venues" label="Venues" />
+
+          {session?.user.role === "ADMIN" && (
+            <SidebarLink href="/venues/create" label="Add Venue" />
+          )}
+
+          <SidebarLink href="/bookings/create" label="Create Booking" />
         </nav>
       </div>
 
-      {/* Bottom Section */}
-      <div>
+      {/* Bottom */}
+      <div className="space-y-4">
+        {/* Workflow Info */}
+        <div
+          className="
+            rounded-2xl
+            border
+            border-cyan-500/20
+            bg-cyan-500/10
+            p-4
+          "
+        >
+          <p className="text-sm leading-6 text-cyan-100">
+            Full-day allocation workflow with dynamic priority-based queue
+            management.
+          </p>
+        </div>
+
+        {/* Logout */}
         <form
           action={async () => {
             "use server";
@@ -119,21 +111,38 @@ export default async function Sidebar() {
         >
           <button
             className="
-                     w-full
-                     bg-white/10
-                     hover:bg-white/20
-                     text-white
-                     py-3
-                     rounded-xl
-                     transition-colors
-                     font-medium
-                     cursor-pointer
-                  "
+              w-full
+              rounded-2xl
+              bg-white/10
+              py-3
+              font-medium
+              transition
+              hover:bg-white/20
+            "
           >
             Logout
           </button>
         </form>
       </div>
     </aside>
+  );
+}
+
+function SidebarLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="
+        block
+        rounded-2xl
+        px-4
+        py-3
+        font-medium
+        transition
+        hover:bg-white/10
+      "
+    >
+      {label}
+    </Link>
   );
 }
